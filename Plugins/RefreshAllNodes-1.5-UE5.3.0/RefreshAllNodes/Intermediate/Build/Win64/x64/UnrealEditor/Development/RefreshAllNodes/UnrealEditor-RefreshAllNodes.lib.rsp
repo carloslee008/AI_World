@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-RefreshAllNodes.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Unreal Projects\AI_World\Intermediate\Build\Win64\x64\AI_WorldEditor\Development\UnrealEd\SharedPCH.UnrealEd.Cpp20.h.obj"
+"C:\Unreal Projects\AI_World\Plugins\RefreshAllNodes-1.5-UE5.3.0\RefreshAllNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\RefreshAllNodes\Module.RefreshAllNodes.cpp.obj"
+"C:\Unreal Projects\AI_World\Plugins\RefreshAllNodes-1.5-UE5.3.0\RefreshAllNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\RefreshAllNodes\Default.rc2.res"
+/OUT:"C:\Unreal Projects\AI_World\Plugins\RefreshAllNodes-1.5-UE5.3.0\RefreshAllNodes\Intermediate\Build\Win64\x64\UnrealEditor\Development\RefreshAllNodes\UnrealEditor-RefreshAllNodes.lib"
