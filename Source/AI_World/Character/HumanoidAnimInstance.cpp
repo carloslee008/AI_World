@@ -84,7 +84,7 @@ void UHumanoidAnimInstance::NativeUpdateAnimation(float DeltaTime)
 		
 	}
 
-	bUseFABRIK = Collector->GetCombatState() != ECombatState::ECS_Reloading;
-	bUseAimOffsets = Collector->GetCombatState() != ECombatState::ECS_Reloading && !Collector->GetDisplayGameplay();
-	bTransformRightHand = Collector->GetCombatState() != ECombatState::ECS_Reloading && !Collector->GetDisplayGameplay();
+	bUseFABRIK = Collector->GetCombatState() == ECombatState::ECS_Unoccupied;
+	bUseAimOffsets = Collector->GetCombatState() == ECombatState::ECS_Unoccupied && !Collector->GetDisplayGameplay();
+	bTransformRightHand = Collector->GetCombatState() == ECombatState::ECS_Unoccupied && !Collector->GetDisplayGameplay();
 }

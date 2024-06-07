@@ -10,6 +10,7 @@
 #include "Animation/AnimationAsset.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Casing.h"
+#include "AI_World/AIWorldComponents/CombatComponent.h"
 #include "AI_World/PlayerController/AIWorldPlayerController.h"
 #include "Engine/SkeletalMeshSocket.h"
 
@@ -27,6 +28,10 @@ AWeapon::AWeapon()
 	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
+	WeaponMesh->MarkRenderStateDirty();
+	EnableCustomDepth(true);
+
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
 	AreaSphere->SetupAttachment(RootComponent);
 	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -35,6 +40,14 @@ AWeapon::AWeapon()
 	PickupWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickupWidget"));
 	PickupWidget->SetupAttachment(RootComponent);
 
+}
+
+void AWeapon::EnableCustomDepth(bool bEnable)
+{
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetRenderCustomDepth(bEnable);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -111,6 +124,11 @@ void AWeapon::SpendRound()
 
 void AWeapon::OnRep_Ammo()
 {
+	OwnerCollector = OwnerCollector == nullptr ? Cast<ACollector>(GetOwner()) : OwnerCollector;
+	if (OwnerCollector && OwnerCollector->GetCombat() && IsFull())
+	{
+		OwnerCollector->GetCombat()->JumpToShotgunEnd();
+	}
 	SetHUDAmmo();
 }
 
@@ -139,7 +157,8 @@ void AWeapon::SetWeaponState(EWeaponState State)
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetEnableGravity(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		SetReplicateMovement(false);
+		// SetReplicateMovement(false);
+		EnableCustomDepth(false);
 		break;
 	case EWeaponState::EWS_Dropped:
 		if (HasAuthority())
@@ -149,7 +168,14 @@ void AWeapon::SetWeaponState(EWeaponState State)
 		WeaponMesh->SetSimulatePhysics(true);
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		SetReplicateMovement(true);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
+		WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		WeaponMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
+		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
+		WeaponMesh->MarkRenderStateDirty();
+		EnableCustomDepth(true);
+		// SetReplicateMovement(true);
 		break;
 	}
 }
@@ -163,13 +189,21 @@ void AWeapon::OnRep_WeaponState()
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetEnableGravity(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		SetReplicateMovement(false);
+		EnableCustomDepth(false);
+		// SetReplicateMovement(false);
 		break;
 	case EWeaponState::EWS_Dropped:
 		WeaponMesh->SetSimulatePhysics(true);
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		SetReplicateMovement(true);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
+		WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		WeaponMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+		
+		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_BLUE);
+		WeaponMesh->MarkRenderStateDirty();
+		EnableCustomDepth(true);
+		// SetReplicateMovement(true);
 		break;
 	}
 }
@@ -222,11 +256,16 @@ void AWeapon::Dropped()
 
 void AWeapon::AddAmmo(int32 AmmoToAdd)
 {
-	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
 	SetHUDAmmo();
 }
 
 bool AWeapon::IsEmpty()
 {
 	return Ammo <=0;
+}
+
+bool AWeapon::IsFull()
+{
+	return Ammo == MagCapacity;
 }

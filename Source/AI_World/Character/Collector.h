@@ -35,6 +35,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayDownedMontage();
+	void PlayThrowGrenadeMontage();
 
 	virtual void OnRep_ReplicatedMovement() override;
 
@@ -83,6 +84,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* TogglePOVAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ThrowGrenadeAction;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -98,6 +102,7 @@ protected:
 	void FireButtonReleased(const FInputActionValue& Value);
 	void ReloadButtonPressed(const FInputActionValue& Value);
 	void TogglePOV(const FInputActionValue& Value);
+	void ThrowGrenadePressed(const FInputActionValue& Value);
 	void PlayHitReactMontage();
 	virtual void Jump() override;
 
@@ -163,6 +168,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* DownedMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ThrowGrenadeMontage;
 	
 	void HideCameraIfCharacterClose();
 
@@ -228,4 +236,5 @@ public:
 	ECombatState GetCombatState() const;
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	FORCEINLINE bool GetDisplayGameplay() const { return bDisableGameplay; }
+	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 };

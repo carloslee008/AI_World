@@ -33,6 +33,16 @@ public:
 	
 	void FireButtonPressed(bool bPressed);
 
+	UFUNCTION(BlueprintCallable)
+	void ShotgunShellReload();
+
+	void JumpToShotgunEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished();
+	
+	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
+
 	UPROPERTY(EditAnywhere, Category="Sound")
 	USoundBase* ZoomInSniperRifle;
 	
@@ -66,6 +76,11 @@ protected:
 	
 	void HandleReload();
 	int32 AmountToReload();
+
+	void ThrowGrenade();
+
+	UFUNCTION(Server, Reliable)
+	void Server_ThrowGrenade();
 
 private:
 
@@ -145,6 +160,9 @@ private:
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 
 	UPROPERTY(EditAnywhere)
+	int32 MaxCarriedAmmo = 60;
+
+	UPROPERTY(EditAnywhere)
 	int32 StartingARAmmo = 30;
 
 	UPROPERTY(EditAnywhere)
@@ -154,7 +172,7 @@ private:
 	int32 StartingPistolAmmo = 4;
 
 	UPROPERTY(EditAnywhere)
-	int32 StartingShotgunAmmo = 5;
+	int32 StartingShotgunAmmo = 3;
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingSniperAmmo = 10;
@@ -168,6 +186,7 @@ private:
 	void OnRep_CombatState();
 
 	void UpdateAmmoValues();
+	void UpdateShotgunAmmoValues();
 	
 public:	
 	

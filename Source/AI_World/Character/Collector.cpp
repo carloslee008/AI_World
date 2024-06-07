@@ -216,7 +216,7 @@ void ACollector::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACollector::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACollector::Jump);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ACollector::Sprint);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &ACollector::StopSprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &ACollector::StopSprint);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACollector::StopJumping);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &ACollector::Interact);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &ACollector::CrouchButtonPressed);
@@ -225,7 +225,7 @@ void ACollector::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ACollector::FireButtonReleased);
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ACollector::ReloadButtonPressed);
 		EnhancedInputComponent->BindAction(TogglePOVAction, ETriggerEvent::Triggered, this, &ACollector::TogglePOV);
-
+		EnhancedInputComponent->BindAction(ThrowGrenadeAction, ETriggerEvent::Triggered, this, &ACollector::ThrowGrenadePressed);
 	}
 }
 
@@ -462,6 +462,14 @@ void ACollector::TogglePOV(const FInputActionValue& Value)
 	}
 }
 
+void ACollector::ThrowGrenadePressed(const FInputActionValue& Value)
+{
+	if (Combat)
+	{
+		Combat->ThrowGrenade();
+	}
+}
+
 void ACollector::TurnInPlace(float DeltaTime)
 {
 	if (AO_Yaw > 90.f)
@@ -619,6 +627,15 @@ void ACollector::PlayDownedMontage()
 	}
 }
 
+void ACollector::PlayThrowGrenadeMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ThrowGrenadeMontage)
+	{
+		AnimInstance->Montage_Play(ThrowGrenadeMontage);
+	}
+}
+
 void ACollector::PlayHitReactMontage()
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -648,16 +665,16 @@ void ACollector::PlayReloadMontage()
 			SectionName = FName("Rifle");
 			break;
 		case EWeaponType::EWT_RocketLauncher:
-			SectionName = FName("Rifle");
+			SectionName = FName("RocketLauncher");
 			break;
 		case EWeaponType::EWT_Pistol:
-			SectionName = FName("Rifle");
+			SectionName = FName("Pistol");
 			break;
 		case EWeaponType::EWT_Shotgun:
-			SectionName = FName("Rifle");
+			SectionName = FName("Shotgun");
 			break;
 		case EWeaponType::EWT_Sniper:
-			SectionName = FName("Rifle");
+			SectionName = FName("SniperRifle");
 			break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
