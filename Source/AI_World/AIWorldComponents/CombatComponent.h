@@ -40,6 +40,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ThrowGrenadeFinished();
+
+	UFUNCTION(BlueprintCallable)
+	void LaunchGrenade();
 	
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
@@ -81,6 +84,14 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void Server_ThrowGrenade();
+
+	void DropCurrentWeapon();
+	void AttachActorToRightHand(AActor* ActorToAttach);
+	void AttachActorToLeftHand(AActor* ActorToAttach);
+
+	void UpdateCarriedAmmo();
+	void PlayEquipWeaponSound();
+	void ShowAttachedGrenade(bool bShowGrenade);
 
 private:
 
