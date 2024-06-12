@@ -680,6 +680,9 @@ void ACollector::PlayReloadMontage()
 		case EWeaponType::EWT_Pistol:
 			SectionName = FName("Pistol");
 			break;
+		case EWeaponType::EWT_GrenadeLauncher:
+			SectionName = FName("Rifle1");
+			break;
 		case EWeaponType::EWT_Shotgun:
 			SectionName = FName("Shotgun");
 			break;
