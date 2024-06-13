@@ -6,6 +6,7 @@
 #include "AI_World/Character/Collector.h"
 // #include "AI_World/Character/AIWorldCharacter.h"
 // #include "AI_World/HUD/AIWorldHUD.h"
+#include "ComponentUtils.h"
 #include "AI_World/PlayerController/AIWorldPlayerController.h"
 #include "AI_World/Weapon/Weapon.h"
 #include "Camera/CameraComponent.h"
@@ -16,6 +17,8 @@
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "Sound/SoundCue.h"
+#include "AI_World/Weapon/Projectile.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values for this component's properties
 UCombatComponent::UCombatComponent()
@@ -332,6 +335,36 @@ void UCombatComponent::ThrowGrenadeFinished()
 void UCombatComponent::LaunchGrenade()
 {
 	ShowAttachedGrenade(false);
+	if (Character && Character->IsLocallyControlled())
+	{
+		Server_LaunchGrenade(HitTarget);
+	}
+}
+
+void UCombatComponent::Server_LaunchGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	if (Character && GrenadeClass && Character->GetAttachedGrenade())
+	{
+		const FVector StartingLocation = Character->GetAttachedGrenade()->GetComponentLocation();
+		FVector ToTarget = Target - StartingLocation;
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = Character;
+		SpawnParameters.Instigator = Character;
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			// Spawn Grenade
+			AProjectile* Grenade = World->SpawnActor<AProjectile>(GrenadeClass, StartingLocation, ToTarget.Rotation(), SpawnParameters);
+			if (Grenade)
+			{
+				FCollisionQueryParams QueryParams;
+				// Ignore colliding with own mesh
+				QueryParams.AddIgnoredActor(SpawnParameters.Owner);
+				Grenade->CollisionBox->IgnoreActorWhenMoving(SpawnParameters.Owner, true);
+			}
+			
+		}
+	}
 }
 
 void UCombatComponent::OnRep_CombatState()
@@ -380,7 +413,7 @@ int32 UCombatComponent::AmountToReload()
 
 void UCombatComponent::ThrowGrenade()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	if (Character)
 	{

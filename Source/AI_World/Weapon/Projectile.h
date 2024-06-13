@@ -15,6 +15,9 @@ public:
 	AProjectile();
 	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;
+	
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* CollisionBox;
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,8 +38,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
 
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* CollisionBox;
+	
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* TrailSystem;
@@ -69,5 +71,5 @@ private:
 	float DestroyTime = 3.f;
 	
 public:	
-
+	
 };

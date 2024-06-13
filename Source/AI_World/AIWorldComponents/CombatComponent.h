@@ -9,6 +9,8 @@
 #include "AI_World/AI_WorldTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
+class AProjectile;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AI_WORLD_API UCombatComponent : public UActorComponent
 {
@@ -43,6 +45,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void LaunchGrenade();
+
+	UFUNCTION(Server, Reliable)
+	void Server_LaunchGrenade(const FVector_NetQuantize& Target);
 	
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
@@ -84,6 +89,9 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void Server_ThrowGrenade();
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> GrenadeClass;
 
 	void DropCurrentWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
