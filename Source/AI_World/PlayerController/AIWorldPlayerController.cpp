@@ -261,6 +261,26 @@ void AAIWorldPlayerController::SetHUDSniperScope(bool bIsAiming)
 	}
 }
 
+void AAIWorldPlayerController::SetHUDGrenade(int32 Grenades)
+{
+	AIWorldHUD = AIWorldHUD == nullptr ? Cast<AAIWorldHUD>(GetHUD()) : AIWorldHUD;
+	bool bHUDValid = AIWorldHUD &&
+		AIWorldHUD->CharacterOverlay &&
+		AIWorldHUD->CharacterOverlay->GrenadeText;
+
+	if (bHUDValid)
+	{
+		FString GrenadeText = FString::Printf(TEXT("%d"), Grenades);
+		AIWorldHUD->CharacterOverlay->GrenadeText->SetText(FText::FromString(GrenadeText));
+	}
+
+	else
+	{
+		HUDGrenades = Grenades;
+	}
+	
+}
+
 void AAIWorldPlayerController::SetHUDTime()
 {
 	float TimeLeft = 0.f;
@@ -305,6 +325,13 @@ void AAIWorldPlayerController::PollInit()
 				SetHUDHealth(HUDHealth, HUDMaxHealth);
 				SetHUDScore(HUDScore);
 				SetHUDDeaths(HUDDeaths);
+				SetHUDGrenade(HUDGrenades);
+
+				ACollector* Collector = Cast<ACollector>(GetPawn());
+				if (Collector && Collector->GetCombat())
+				{
+					SetHUDGrenade(Collector->GetCombat()->GetGrenades());
+				}
 			}
 		}
 	}

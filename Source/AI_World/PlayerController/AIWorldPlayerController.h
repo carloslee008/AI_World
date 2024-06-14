@@ -14,6 +14,7 @@ class AI_WORLD_API AAIWorldPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
 	void SetHUDDeaths(int32 Deaths);
@@ -23,6 +24,7 @@ public:
 	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 	void SetHUDSniperScope(bool bIsAiming);
+	void SetHUDGrenade(int32 Grenades);
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -90,5 +92,6 @@ private:
 	float HUDMaxHealth;
 	float HUDScore;
 	int32 HUDDeaths;
+	int32 HUDGrenades;
 	
 };

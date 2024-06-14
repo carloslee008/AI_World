@@ -697,6 +697,8 @@ void ACollector::PlayReloadMontage()
 void ACollector::ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
+	// Cannot take damage if already downed
+	if (bDowned) return;
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();

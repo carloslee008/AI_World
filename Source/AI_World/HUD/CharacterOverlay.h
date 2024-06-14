@@ -7,7 +7,7 @@
 #include "CharacterOverlay.generated.h"
 
 /**
- * 
+ * Widget Variables
  */
 UCLASS()
 class AI_WORLD_API UCharacterOverlay : public UUserWidget
@@ -37,6 +37,9 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* CarriedAmmoAmount;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* GrenadeText;
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* MatchCountdownText;

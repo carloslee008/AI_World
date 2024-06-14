@@ -38,7 +38,9 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
-	DOREPLIFETIME(UCombatComponent, CombatState)
+	DOREPLIFETIME(UCombatComponent, CombatState);
+	DOREPLIFETIME(UCombatComponent, Grenades);
+
 }
 
 void UCombatComponent::ShotgunShellReload()
@@ -362,7 +364,6 @@ void UCombatComponent::Server_LaunchGrenade_Implementation(const FVector_NetQuan
 				QueryParams.AddIgnoredActor(SpawnParameters.Owner);
 				Grenade->CollisionBox->IgnoreActorWhenMoving(SpawnParameters.Owner, true);
 			}
-			
 		}
 	}
 }
@@ -413,6 +414,9 @@ int32 UCombatComponent::AmountToReload()
 
 void UCombatComponent::ThrowGrenade()
 {
+	// Return if no grenades
+	if (Grenades == 0) return;
+	// Return if not unoccupied or no weapon
 	if (CombatState != ECombatState::ECS_Unoccupied || EquippedWeapon == nullptr) return;
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	if (Character)
@@ -425,10 +429,17 @@ void UCombatComponent::ThrowGrenade()
 	{
 		Server_ThrowGrenade();
 	}
+	if (Character && Character->HasAuthority())
+	{
+		Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+		UpdateHUDGrenades();
+	}
 }
 
 void UCombatComponent::Server_ThrowGrenade_Implementation()
 {
+	// If no grenades
+	if (Grenades == 0) return;
 	CombatState = ECombatState::ECS_ThrowingGrenade;
 	if (Character)
 	{
@@ -436,6 +447,18 @@ void UCombatComponent::Server_ThrowGrenade_Implementation()
 		Character->PlayThrowGrenadeMontage();
 		AttachActorToLeftHand(EquippedWeapon);
 	}
+	// Update grenade count, clamp to not go below 0 or above max count
+	Grenades = FMath::Clamp(Grenades - 1, 0, MaxGrenades);
+	UpdateHUDGrenades();
+}
+
+void UCombatComponent::UpdateHUDGrenades()
+{
+	Controller = Controller == nullptr ? Cast<AAIWorldPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDGrenade(Grenades);
+ 	}
 }
 
 // Set grenade visibility
@@ -670,6 +693,11 @@ void UCombatComponent::OnRep_CarriedAmmo()
 	{
 		JumpToShotgunEnd();
 	}
+}
+
+void UCombatComponent::OnRep_Grenades()
+{
+	UpdateHUDGrenades();
 }
 
 void UCombatComponent::InitializeCarriedAmmo()
