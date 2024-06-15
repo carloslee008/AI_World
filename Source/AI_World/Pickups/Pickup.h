@@ -19,6 +19,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
 	virtual void OnSphereOverlap(
 		UPrimitiveComponent* OverlappedComponent,
 		AActor* OtherActor,

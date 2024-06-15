@@ -3,6 +3,7 @@
 
 #include "Pickup.h"
 
+#include "AI_World/Weapon/WeaponTypes.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -24,12 +25,17 @@ APickup::APickup()
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupMesh"));
 	PickupMesh->SetupAttachment(OverlapSphere);
 	PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// Scale up the mesh
+	PickupMesh->SetRelativeScale3D(FVector(5.f, 5.f, 5.f));
+	PickupMesh->SetRenderCustomDepth(true);
+	PickupMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
 }
 
 void APickup::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Only have overlap events triggering on the server
 	if (HasAuthority())
 	{
 		OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlap);

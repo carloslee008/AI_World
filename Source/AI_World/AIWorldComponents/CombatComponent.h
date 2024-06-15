@@ -175,9 +175,12 @@ private:
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
 
+	/**
+	 *	Currently carried ammo
+	 */
 	UPROPERTY(EditAnywhere)
 	TMap<EWeaponType, int32> CarriedAmmoMap;
-
+	
 	UPROPERTY(EditAnywhere)
 	int32 MaxCarriedAmmo = 60;
 
@@ -188,7 +191,7 @@ private:
 	int32 StartingRocketAmmo = 8;
 
 	UPROPERTY(EditAnywhere)
-	int32 StartingPistolAmmo = 4;
+	int32 StartingPistolAmmo = 8;
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingShotgunAmmo = 3;
@@ -198,6 +201,28 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingGrenadeLauncherAmmo = 8;
+
+	// Maximum ammo capacity per weapon type
+	UPROPERTY(EditAnywhere)
+	TMap<EWeaponType, int32> MaxAmmoMap;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxARAmmo = 60;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxRocketAmmo = 12;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxPistolAmmo = 16;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxShotgunAmmo = 12;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxSniperAmmo = 15;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxGrenadeLauncherAmmo = 12;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Grenades)
 	int32 Grenades = 3;

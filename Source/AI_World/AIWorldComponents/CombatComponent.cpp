@@ -107,6 +107,8 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 	{
 		CarriedAmmoMap[WeaponType] += FMath::Clamp(CarriedAmmoMap[WeaponType] + AmmoAmount, 0, MaxCarriedAmmo);
 	}
+	// Updates HUD if currently equipped weapon type is same as picked up ammo
+	UpdateCarriedAmmo();
 }
 
 void UCombatComponent::Fire()
@@ -223,7 +225,7 @@ void UCombatComponent::AttachActorToLeftHand(AActor* ActorToAttach)
 void UCombatComponent::UpdateCarriedAmmo()
 {
 	if (EquippedWeapon == nullptr) return;
-	// Gets the ammo ammount from weapon map
+	// Gets the ammo amount from weapon map
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
