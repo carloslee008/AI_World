@@ -19,6 +19,7 @@
 #include "AI_World/GameMode/AIWorldGameMode.h"
 #include "AI_World/PlayerController/AIWorldPlayerController.h"
 #include "TimerManager.h"
+#include "AI_World/AIWorldComponents/BuffComponent.h"
 #include "AI_World/Clue/Clue.h"
 #include "AI_World/PlayerState/AIWorldPlayerState.h"
 #include "AI_World/Weapon/WeaponTypes.h"
@@ -52,6 +53,10 @@ ACollector::ACollector()
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+
+	Buff = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	Buff->SetIsReplicated(true);
+	
 	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -524,10 +529,14 @@ void ACollector::HideCameraIfCharacterClose()
 	}
 }
 
-void ACollector::OnRep_Health()
+void ACollector::OnRep_Health(float LastHealth)
 {
 	UpdateHUDHealth();
-	PlayHitReactMontage();
+	// If health decreases 
+	if (Health < LastHealth)
+	{
+		PlayHitReactMontage();
+	}
 }
 
 void ACollector::UpdateHUDHealth()
@@ -611,6 +620,10 @@ void ACollector::PostInitializeComponents()
 	if (Combat)
 	{
 		Combat->Character = this;
+	}
+	if (Buff)
+	{
+		Buff->Character = this;
 	}
 }
 

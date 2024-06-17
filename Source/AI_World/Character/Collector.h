@@ -47,6 +47,9 @@ public:
 	UPROPERTY(Replicated)
 	bool bDisableGameplay = false;
 
+	void UpdateHUDHealth();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -110,7 +113,6 @@ protected:
 
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
-	void UpdateHUDHealth();
 	// Poll for any relevant classes and initialize our HUD
 	void PollInit();
 
@@ -141,6 +143,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCombatComponent* Combat;
+
+	UPROPERTY(VisibleAnywhere)
+	class UBuffComponent* Buff;
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteract();
@@ -201,7 +206,7 @@ private:
 	float Health = 150.f;
 
 	UFUNCTION()
-	void OnRep_Health();
+	void OnRep_Health(float LastHealth);
 
 	UPROPERTY()
 	class AAIWorldPlayerController* AIWorldPlayerController;
@@ -242,10 +247,12 @@ public:
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE bool IsDowned() const { return bDowned; }
 	FORCEINLINE float GetHealth() const { return Health; }
+	FORCEINLINE float SetHealth(float Amount) { return Health = Amount; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	ECombatState GetCombatState() const;
 	FORCEINLINE UCombatComponent* GetCombat() const { return Combat; }
 	FORCEINLINE bool GetDisplayGameplay() const { return bDisableGameplay; }
 	FORCEINLINE UAnimMontage* GetReloadMontage() const { return ReloadMontage; }
 	FORCEINLINE UStaticMeshComponent* GetAttachedGrenade() const { return AttachedGrenade; }
+	FORCEINLINE UBuffComponent* GetBuff() const { return Buff; }
 };
