@@ -3,7 +3,6 @@
 
 #include "AIWorldGameMode.h"
 
-#include "AI_World/Character/AIWorldCharacter.h"
 #include "AI_World/Character/Collector.h"
 #include "AI_World/GameState/AIWorldGameState.h"
 #include "GameFramework/PlayerStart.h"

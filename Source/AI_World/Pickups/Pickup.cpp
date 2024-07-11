@@ -35,17 +35,30 @@ void APickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Only have overlap events triggering on the server
 	if (HasAuthority())
 	{
-		OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlap);
+		// Destroy pickup after a delay of 0.25 secs after overlapping 
+		GetWorldTimerManager().SetTimer(
+			BindOverlapTimer,
+			this,
+			&APickup::BindOverlapTimerFinished,
+			BindOverlapTime
+		);
 	}
-	
 }
 
 void APickup::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+}
+
+void APickup::BindOverlapTimerFinished()
+{
+	// Only have overlap events triggering on the server
+	if (HasAuthority())
+	{
+		OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlap);
+	}
 }
 
 void APickup::Tick(float DeltaTime)
