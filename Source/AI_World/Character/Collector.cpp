@@ -96,7 +96,16 @@ void ACollector::Down()
 {
 	if (Combat && Combat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->Dropped();
+		// Destroy weapon if down
+		if (Combat->EquippedWeapon->bDestroyWeapon)
+		{
+			Combat->EquippedWeapon->Destroy();
+		}
+		// Droop weapon if down
+		else
+		{
+			Combat->EquippedWeapon->Dropped();
+		}
 	}
 	MulticastDown();
 	GetWorldTimerManager().SetTimer(
@@ -158,6 +167,7 @@ void ACollector::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Enable Enhanced Input
 	if (const ULocalPlayer* Player = (GEngine && GetWorld()) ? GEngine->GetFirstGamePlayer(GetWorld()) : nullptr)
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player);
@@ -167,6 +177,8 @@ void ACollector::BeginPlay()
 		}
 	}
 
+	SpawnDefaultWeapon();
+	UpdateHUDAmmo();
 	UpdateHUDHealth();
 	if (HasAuthority())
 	{
@@ -545,6 +557,34 @@ void ACollector::UpdateHUDHealth()
 	if (AIWorldPlayerController)
 	{
 		AIWorldPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void ACollector::UpdateHUDAmmo()
+{
+	AIWorldPlayerController = AIWorldPlayerController == nullptr ? Cast<AAIWorldPlayerController>(Controller) : AIWorldPlayerController;
+	if (AIWorldPlayerController)
+	{
+		AIWorldPlayerController->SetHUDCarriedAmmo(Combat->CarriedAmmo);
+		AIWorldPlayerController->SetHUDWeaponAmmo(Combat->EquippedWeapon->GetAmmo());
+	}
+}
+
+void ACollector::SpawnDefaultWeapon()
+{
+	// GetGameMode returns null if not on server
+	AAIWorldGameMode* AIWorldGameMode = Cast<AAIWorldGameMode>(UGameplayStatics::GetGameMode(this));
+	UWorld* World = GetWorld();
+	// Check if currently in a map that uses AIWorldGameMode (so not lobby)
+	if (AIWorldGameMode && World && !bDowned && DefaultWeaponClass)
+	{
+		AWeapon* StartingWeapon = World->SpawnActor<AWeapon>(DefaultWeaponClass);
+		// Destroy Starting Weapons
+		// StartingWeapon->bDestroyWeapon = false;
+		if (Combat)
+		{
+			Combat->EquipWeapon(StartingWeapon);
+		}
 	}
 }
 

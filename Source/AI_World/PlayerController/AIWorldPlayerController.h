@@ -89,9 +89,17 @@ private:
 	bool bInitializeCharacterOverlay = false;
 
 	float HUDHealth;
+	bool bInitializeHealth = false;
 	float HUDMaxHealth;
 	float HUDScore;
+	bool bInitializeScore = false;
 	int32 HUDDeaths;
+	bool bInitializeDeaths = false;
 	int32 HUDGrenades;
+	bool bInitializeGrenades = false;
+	float HUDCarriedAmmo;
+	bool bInitializeCarriedAmmo = false;
+	float HUDWeaponAmmo;
+	bool bInitializeWeaponAmmo = false;
 	
 };

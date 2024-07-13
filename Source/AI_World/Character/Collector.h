@@ -48,12 +48,14 @@ public:
 	bool bDisableGameplay = false;
 
 	void UpdateHUDHealth();
+	void UpdateHUDAmmo();
 
+
+	void SpawnDefaultWeapon();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void RotateInPlace(float DeltaTime);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category= Input)
 	UInputMappingContext* DefaultMappingContext;
@@ -115,6 +117,7 @@ protected:
 	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 	// Poll for any relevant classes and initialize our HUD
 	void PollInit();
+	void RotateInPlace(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -229,6 +232,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* AttachedGrenade;
+
+	/**
+	* Default Weapon
+	*/
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AWeapon> DefaultWeaponClass;
 	
 public:	
 	void SetOverlappingWeapon(AWeapon* Weapon);

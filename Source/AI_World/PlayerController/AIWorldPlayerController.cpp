@@ -106,7 +106,7 @@ void AAIWorldPlayerController::SetHUDHealth(float Health, float MaxHealth)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeHealth = true;
 		HUDHealth = Health;
 		HUDMaxHealth = MaxHealth;
 	}
@@ -125,7 +125,7 @@ void AAIWorldPlayerController::SetHUDScore(float Score)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeScore = true;
 		HUDScore = Score;
 	}
 }
@@ -143,7 +143,7 @@ void AAIWorldPlayerController::SetHUDDeaths(int32 Deaths)
 	}
 	else
 	{
-		bInitializeCharacterOverlay = true;
+		bInitializeDeaths = true;
 		HUDDeaths = Deaths;
 	}
 }
@@ -159,6 +159,11 @@ void AAIWorldPlayerController::SetHUDWeaponAmmo(int32 Ammo)
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
 		AIWorldHUD->CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(AmmoText));
 	}
+	else
+	{
+		bInitializeWeaponAmmo = true;
+		HUDWeaponAmmo = Ammo;
+	}
 }
 
 void AAIWorldPlayerController::SetHUDCarriedAmmo(int32 Ammo)
@@ -171,6 +176,11 @@ void AAIWorldPlayerController::SetHUDCarriedAmmo(int32 Ammo)
 	{
 		FString AmmoText = FString::Printf(TEXT("%d"), Ammo);
 		AIWorldHUD->CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(AmmoText));
+	}
+	else
+	{
+		bInitializeCarriedAmmo = true;
+		HUDCarriedAmmo = Ammo;
 	}
 }
 
@@ -322,10 +332,12 @@ void AAIWorldPlayerController::PollInit()
 			CharacterOverlay = AIWorldHUD->CharacterOverlay;
 			if (CharacterOverlay)
 			{
-				SetHUDHealth(HUDHealth, HUDMaxHealth);
-				SetHUDScore(HUDScore);
-				SetHUDDeaths(HUDDeaths);
-				SetHUDGrenade(HUDGrenades);
+				if (bInitializeHealth) SetHUDHealth(HUDHealth, HUDMaxHealth);
+				if (bInitializeScore) SetHUDScore(HUDScore);
+				if (bInitializeDeaths) SetHUDDeaths(HUDDeaths);
+				if (bInitializeGrenades) SetHUDGrenade(HUDGrenades);
+				if (bInitializeCarriedAmmo) SetHUDCarriedAmmo(HUDCarriedAmmo);
+				if (bInitializeWeaponAmmo) SetHUDWeaponAmmo(HUDWeaponAmmo);
 
 				ACollector* Collector = Cast<ACollector>(GetPawn());
 				if (Collector && Collector->GetCombat())

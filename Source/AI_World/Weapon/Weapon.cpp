@@ -142,7 +142,11 @@ void AWeapon::OnRep_Owner()
 	}
 	else
 	{
-		SetHUDAmmo();
+		OwnerCollector = OwnerCollector == nullptr ? Cast<ACollector>(Owner) : OwnerCollector;
+		if (OwnerCollector && OwnerCollector->GetEquippedWeapon() && OwnerCollector->GetEquippedWeapon() == this)
+		{
+			SetHUDAmmo();
+		}
 	}
 }
 
@@ -158,7 +162,6 @@ void AWeapon::SetWeaponState(EWeaponState State)
 		WeaponMesh->SetEnableGravity(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// SetReplicateMovement(false);
-		EnableCustomDepth(false);
 		break;
 	case EWeaponState::EWS_Dropped:
 		if (HasAuthority())
@@ -189,7 +192,6 @@ void AWeapon::OnRep_WeaponState()
 		WeaponMesh->SetSimulatePhysics(false);
 		WeaponMesh->SetEnableGravity(false);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		EnableCustomDepth(false);
 		// SetReplicateMovement(false);
 		break;
 	case EWeaponState::EWS_Dropped:
